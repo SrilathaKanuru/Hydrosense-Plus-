@@ -107,7 +107,7 @@
 
   <div id="home" class="section">
     <div class="droplet-animation">
-      <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_wFGV4i.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
+      <lottie-player src="https://assets7.lottiefiles.com/packages/lf20_Cc8Bpg.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
       <h1 style="font-size: 2rem; color: #0288d1;">HydroSense – Let's Sense Every Drop</h1>
     </div>
     <p>Monitor and manage your water usage smartly.</p>
@@ -201,7 +201,6 @@
       document.getElementById('liveLevel').textContent = (5 + Math.random() * 20).toFixed(1);
     }, 3000);
 
-    // Tank level history chart
     const tankCtx = document.getElementById('tankChart').getContext('2d');
     const tankData = {
       labels: Array.from({ length: 10 }, (_, i) => `T-${10 - i}s`),
@@ -231,7 +230,6 @@
       tankChart.update();
     }, 4000);
 
-    // Usage chart for dashboard
     const usageCtx = document.getElementById('usageChart').getContext('2d');
     const usageChart = new Chart(usageCtx, {
       type: 'bar',
