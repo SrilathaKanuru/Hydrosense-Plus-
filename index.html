@@ -148,8 +148,7 @@
         <li>Use a bucket instead of a hose to wash your car.</li>
         <li>Collect rainwater for gardening purposes.</li>
         <li>Use water-efficient appliances.</li>
-        <li>Don't overwater your plants — water early morning or evening.</li>
-        <li>Run full loads in your washing machine or dishwasher.</li>
+        <li>Water early morning or evening to reduce evaporation.</li>
       </ul>
     </div>
   </div>
@@ -164,8 +163,8 @@
   <div id="tank" class="section">
     <div class="tank">
       <h3>Water Tank Level</h3>
-      <div class="tank-level" style="height: 30px; width: 100%; background: #81d4fa; border-radius: 5px;">
-        <div class="tank-fill" id="tankFill" style="height: 100%; width: 50%; background: #0288d1; border-radius: 5px; transition: width 1s ease-in-out;"></div>
+      <div style="height: 30px; width: 100%; background: #81d4fa; border-radius: 5px;">
+        <div id="tankFill" style="height: 100%; width: 50%; background: #0288d1; border-radius: 5px; transition: width 1s;"></div>
       </div>
       <p id="tankPercentage">50%</p>
       <button class="btn" onclick="toggleMotor()">Toggle Motor</button>
@@ -233,9 +232,7 @@
             },
             options: {
               responsive: true,
-              scales: {
-                y: { beginAtZero: true }
-              }
+              scales: { y: { beginAtZero: true } }
             }
           });
 
@@ -256,9 +253,7 @@
             options: {
               responsive: true,
               animation: false,
-              scales: {
-                y: { beginAtZero: true, max: 100 }
-              }
+              scales: { y: { beginAtZero: true, max: 100 } }
             }
           });
 
@@ -288,7 +283,6 @@
             }
             tankChart.update();
           }, 3000);
-
         } else {
           width += 1;
           progressBar.style.width = width + "%";
