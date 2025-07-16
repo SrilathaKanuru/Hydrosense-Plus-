@@ -16,48 +16,9 @@
       color: #004d40;
       overflow-x: hidden;
     }
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('https://www.transparenttextures.com/patterns/watercolor.png');
-      background-size: 100px;
-      background-repeat: repeat;
-      opacity: 0.03;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .splash-screen {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #01579b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 9999;
-      color: white;
-      font-size: 1.5rem;
-    }
-    .progress-container {
-      width: 80%;
-      height: 10px;
-      background: rgba(255,255,255,0.2);
-      margin-top: 20px;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-    .progress-bar {
-      width: 0%;
-      height: 100%;
-      background: #ffffff;
-      transition: width 0.2s ease-in-out;
-    }
-    header, nav, .section {
-      animation: fadeIn 1s ease-in-out;
+    body.dark-mode {
+      background: #263238;
+      color: #eceff1;
     }
     nav {
       background-color: #0288d1;
@@ -66,33 +27,18 @@
       justify-content: center;
       gap: 20px;
     }
-    nav a {
+    nav a, .btn-toggle-mode {
       color: white;
       text-decoration: none;
       font-weight: bold;
-    }
-    nav a:hover {
-      text-decoration: underline;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
     }
     .section {
       padding: 30px;
       display: none;
-    }
-    .intro {
-      background: #01579b;
-      color: white;
-      text-align: center;
-      padding: 40px 20px;
-      font-size: 1.5rem;
-    }
-    .login-form, .control-panel, .goal-alerts, .feedback-form {
-      margin-top: 20px;
-    }
-    .login-form input, .feedback-form input, .feedback-form textarea {
-      display: block;
-      margin: 10px 0;
-      padding: 8px;
-      width: 100%;
     }
     .btn {
       background: #0288d1;
@@ -101,74 +47,95 @@
       padding: 10px;
       cursor: pointer;
     }
+    .tank {
+      background: #b3e5fc;
+      border: 2px solid #0288d1;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .alert {
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+    }
+    .low { background: #d32f2f; }
+    .high { background: #388e3c; }
+    .feedback {
+      margin-top: 30px;
+    }
+    .feedback textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .feedback button {
+      margin-top: 10px;
+    }
   </style>
 </head>
-<body class="drops">
+<body>
   <div class="splash-screen" id="splash">
     <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_hydwfxva.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
     <p>Loading HydroSense...</p>
     <div class="progress-container">
       <div class="progress-bar" id="progressBar"></div>
     </div>
-    <audio id="splashSound" autoplay>
-      <source src="https://actions.google.com/sounds/v1/water/bubble_water.ogg" type="audio/ogg">
-    </audio>
   </div>
 
-  <div class="intro" style="display:none;" id="mainIntro">
-    <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_YXD37q.json" background="transparent" speed="1" loop autoplay></lottie-player>
-    <span>Start with </span><span>HydroSense: </span><span>Let's sense every drop!</span>
-  </div>
-
-  <nav style="display:none" id="navBar">
+  <nav id="mainNav" style="display:none">
     <a href="#" onclick="showSection('home')">Home</a>
     <a href="#" onclick="showSection('dashboard')">Dashboard</a>
-    <a href="#" onclick="showSection('live')">Live Data</a>
-    <a href="#" onclick="showSection('control')">Control</a>
-    <a href="#" onclick="showSection('goals')">Goals</a>
     <a href="#" onclick="showSection('feedback')">Feedback</a>
+    <a href="#" onclick="showSection('live')">Live Data</a>
+    <button class="btn-toggle-mode" onclick="toggleDarkMode()">🌓</button>
   </nav>
 
-  <div id="home" class="section">Welcome to HydroSense! Monitor and manage your water usage smartly.</div>
+  <div id="home" class="section">
+    <h2>Welcome to HydroSense!</h2>
+    <p>Monitor and manage your water usage smartly.</p>
+    <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kq5rGs.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></lottie-player>
+    <div class="tank">
+      <h3>Water Tank Level</h3>
+      <div class="tank-level" style="height: 30px; width: 100%; background: #81d4fa; border-radius: 5px;">
+        <div class="tank-fill" id="tankFill" style="height: 100%; width: 50%; background: #0288d1; border-radius: 5px; transition: width 1s ease-in-out;"></div>
+      </div>
+      <p id="tankPercentage">50%</p>
+      <button class="btn" onclick="toggleMotor()">Toggle Motor</button>
+      <p id="motorStatus">Motor is OFF</p>
+      <div id="alertMsg"></div>
+    </div>
+  </div>
 
   <div id="dashboard" class="section">
-    <h2>Water Usage Dashboard</h2>
-    <canvas id="waterChart" width="400" height="200"></canvas>
+    <h2>Usage Dashboard</h2>
+    <canvas id="usageChart" width="400" height="200"></canvas>
+  </div>
+
+  <div id="feedback" class="section">
+    <h2>Send Feedback or Suggestions</h2>
+    <div class="feedback">
+      <textarea placeholder="Enter your thoughts here..."></textarea>
+      <button class="btn">Submit</button>
+    </div>
   </div>
 
   <div id="live" class="section">
-    <h2>Live Data Simulation</h2>
-    <p><strong>Kitchen:</strong> <span id="kitchenLive">120</span> L</p>
-    <p><strong>Bathroom:</strong> <span id="bathroomLive">200</span> L</p>
-    <p><strong>Garden:</strong> <span id="gardenLive">150</span> L</p>
-  </div>
-
-  <div id="control" class="section control-panel">
-    <h2>Control Panel</h2>
-    <button class="btn" onclick="alert('Pump turned ON')">Turn Pump ON</button>
-    <button class="btn" onclick="alert('Pump turned OFF')">Turn Pump OFF</button>
-  </div>
-
-  <div id="goals" class="section goal-alerts">
-    <h2>Set Usage Goal</h2>
-    <input type="number" placeholder="Enter daily usage goal (Litres)" id="goalInput">
-    <button class="btn" onclick="setGoal()">Set Goal</button>
-    <p id="goalMsg"></p>
-  </div>
-
-  <div id="feedback" class="section feedback-form">
-    <h2>Feedback</h2>
-    <input type="text" placeholder="Your Name">
-    <textarea rows="4" placeholder="Your Feedback"></textarea>
-    <button class="btn">Submit</button>
+    <h2>Live Sensor Data</h2>
+    <p><strong>Flow Rate:</strong> <span id="liveFlow">Loading...</span> L/min</p>
+    <p><strong>Soil Moisture:</strong> <span id="liveSoil">Loading...</span>%</p>
+    <p><strong>Tank Distance:</strong> <span id="liveLevel">Loading...</span> cm</p>
+    <p style="font-size: 0.9em; color: gray;">Note: This is dummy simulated data. Connect Firebase or ESP32 for real data.</p>
   </div>
 
   <script>
     let progress = 0;
     const bar = document.getElementById("progressBar");
     const splash = document.getElementById("splash");
-    const intro = document.getElementById("mainIntro");
-    const nav = document.getElementById("navBar");
+    const nav = document.getElementById("mainNav");
     const sections = document.querySelectorAll('.section');
 
     const simulateLoading = setInterval(() => {
@@ -177,29 +144,52 @@
       if (progress >= 100) {
         clearInterval(simulateLoading);
         splash.style.display = 'none';
-        intro.style.display = 'block';
-        setTimeout(() => {
-          intro.style.display = 'none';
-          nav.style.display = 'flex';
-          showSection('home');
-        }, 4000);
+        nav.style.display = 'flex';
+        showSection('home');
       }
-    }, 150);
+    }, 100);
 
     function showSection(id) {
       sections.forEach(sec => sec.style.display = 'none');
       document.getElementById(id).style.display = 'block';
     }
 
+    let motorOn = false;
+    function toggleMotor() {
+      motorOn = !motorOn;
+      document.getElementById('motorStatus').textContent = `Motor is ${motorOn ? 'ON' : 'OFF'}`;
+    }
+
+    setInterval(() => {
+      const level = Math.floor(30 + Math.random() * 60);
+      document.getElementById('tankFill').style.width = `${level}%`;
+      document.getElementById('tankPercentage').textContent = `${level}%`;
+
+      const alertMsg = document.getElementById('alertMsg');
+      if (level < 40) {
+        alertMsg.innerHTML = '<div class="alert low">Warning: Tank level low!</div>';
+      } else if (level > 85) {
+        alertMsg.innerHTML = '<div class="alert high">Alert: Tank is nearly full!</div>';
+      } else {
+        alertMsg.innerHTML = '';
+      }
+    }, 4000);
+
+    setInterval(() => {
+      document.getElementById('liveFlow').textContent = (Math.random() * 10).toFixed(2);
+      document.getElementById('liveSoil').textContent = (40 + Math.random() * 30).toFixed(1);
+      document.getElementById('liveLevel').textContent = (5 + Math.random() * 20).toFixed(1);
+    }, 3000);
+
     setTimeout(() => {
-      const ctx = document.getElementById('waterChart').getContext('2d');
+      const ctx = document.getElementById('usageChart').getContext('2d');
       new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Kitchen', 'Bathroom', 'Garden', 'Laundry'],
+          labels: ['Kitchen', 'Bathroom', 'Garden'],
           datasets: [{
             label: 'Water Usage (Litres)',
-            data: [120, 200, 150, 80],
+            data: [120, 200, 150],
             backgroundColor: '#0288d1'
           }]
         },
@@ -212,19 +202,10 @@
           }
         }
       });
-    }, 6000);
+    }, 1500);
 
-    // Live Data Simulation
-    setInterval(() => {
-      document.getElementById('kitchenLive').textContent = Math.floor(100 + Math.random() * 50);
-      document.getElementById('bathroomLive').textContent = Math.floor(180 + Math.random() * 30);
-      document.getElementById('gardenLive').textContent = Math.floor(140 + Math.random() * 40);
-    }, 5000);
-
-    // Set Goal Function
-    function setGoal() {
-      const goal = document.getElementById('goalInput').value;
-      document.getElementById('goalMsg').textContent = `Goal set to ${goal} Litres per day.`;
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
     }
   </script>
 </body>
