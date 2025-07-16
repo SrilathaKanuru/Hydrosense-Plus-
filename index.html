@@ -115,6 +115,14 @@
       <h1 style="font-size: 2rem; color: #0288d1;">HydroSense – Let's Sense Every Drop</h1>
     </div>
     <p>Monitor and manage your water usage smartly.</p>
+  </div>
+
+  <div id="dashboard" class="section">
+    <h2>Usage Dashboard</h2>
+    <canvas id="usageChart" width="400" height="200"></canvas>
+  </div>
+
+  <div id="tank" class="section">
     <div class="tank">
       <h3>Water Tank Level</h3>
       <div class="tank-level" style="height: 30px; width: 100%; background: #81d4fa; border-radius: 5px;">
@@ -124,18 +132,20 @@
       <button class="btn" onclick="toggleMotor()">Toggle Motor</button>
       <p id="motorStatus">Motor is OFF</p>
     </div>
-    <div class="tips-box">
-      <h3>💧 Water Conservation Tips</h3>
-      <ul id="tipList">
-        <li>Turn off the tap while brushing your teeth.</li>
-      </ul>
-      <button class="btn" onclick="showRandomTip()">Show Another Tip</button>
-    </div>
   </div>
 
-  <div id="dashboard" class="section">
-    <h2>Usage Dashboard</h2>
-    <canvas id="usageChart" width="400" height="200"></canvas>
+  <div id="feedback" class="section">
+    <h2>Feedback</h2>
+    <p>We value your feedback! Please share your thoughts.</p>
+    <textarea rows="4" cols="50" placeholder="Enter feedback here..."></textarea><br>
+    <button class="btn">Submit</button>
+  </div>
+
+  <div id="live" class="section">
+    <h2>Live Data</h2>
+    <p>Live sensor updates will appear here.</p>
+    <p><strong>Current Tank Level:</strong> <span id="liveTank">52%</span></p>
+    <p><strong>Motor Status:</strong> <span id="liveMotor">OFF</span></p>
   </div>
 
   <script>
@@ -149,16 +159,12 @@
       "Run full loads in your washing machine or dishwasher."
     ];
 
-    function showRandomTip() {
-      const randomTip = tips[Math.floor(Math.random() * tips.length)];
-      const tipList = document.getElementById('tipList');
-      tipList.innerHTML = `<li>${randomTip}</li>`;
-    }
-
     function toggleMotor() {
       const motorStatus = document.getElementById("motorStatus");
+      const liveMotor = document.getElementById("liveMotor");
       const isOn = motorStatus.textContent.includes("ON");
       motorStatus.textContent = isOn ? "Motor is OFF" : "Motor is ON";
+      liveMotor.textContent = motorStatus.textContent.split(" ")[2];
     }
 
     function showSection(id) {
@@ -186,7 +192,6 @@
           document.getElementById("mainNav").style.display = "flex";
           showSection('home');
 
-          // Initialize chart
           const usageCtx = document.getElementById('usageChart').getContext('2d');
           new Chart(usageCtx, {
             type: 'bar',
