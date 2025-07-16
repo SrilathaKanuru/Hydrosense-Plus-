@@ -157,6 +157,8 @@
   <div id="dashboard" class="section">
     <h2>Usage Dashboard</h2>
     <canvas id="usageChart" width="400" height="200"></canvas>
+    <h3>Tank Water Level Over Time</h3>
+    <canvas id="tankGraph" width="400" height="200"></canvas>
   </div>
 
   <div id="tank" class="section">
@@ -168,6 +170,7 @@
       <p id="tankPercentage">50%</p>
       <button class="btn" onclick="toggleMotor()">Toggle Motor</button>
       <p id="motorStatus">Motor is OFF</p>
+      <p id="tankAlert" style="color: red; font-weight: bold;"></p>
     </div>
   </div>
 
@@ -236,12 +239,54 @@
             }
           });
 
-          // Simulate tank level update
+          const tankCtx = document.getElementById('tankGraph').getContext('2d');
+          const tankChart = new Chart(tankCtx, {
+            type: 'line',
+            data: {
+              labels: [],
+              datasets: [{
+                label: 'Tank Level (%)',
+                data: [],
+                borderColor: '#0288d1',
+                backgroundColor: 'rgba(2, 136, 209, 0.2)',
+                tension: 0.3,
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              animation: false,
+              scales: {
+                y: { beginAtZero: true, max: 100 }
+              }
+            }
+          });
+
           setInterval(() => {
             const level = Math.floor(30 + Math.random() * 60);
             document.getElementById('tankFill').style.width = `${level}%`;
             document.getElementById('tankPercentage').textContent = `${level}%`;
             document.getElementById('liveTank').textContent = `${level}%`;
+
+            const alertBox = document.getElementById('tankAlert');
+            if (level >= 90) {
+              alertBox.textContent = '⚠️ Alert: Tank is FULL!';
+              alertBox.style.color = 'green';
+            } else if (level <= 35) {
+              alertBox.textContent = '⚠️ Alert: Tank is LOW!';
+              alertBox.style.color = 'red';
+            } else {
+              alertBox.textContent = '';
+            }
+
+            const now = new Date().toLocaleTimeString();
+            tankChart.data.labels.push(now);
+            tankChart.data.datasets[0].data.push(level);
+            if (tankChart.data.labels.length > 10) {
+              tankChart.data.labels.shift();
+              tankChart.data.datasets[0].data.shift();
+            }
+            tankChart.update();
           }, 3000);
 
         } else {
