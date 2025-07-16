@@ -23,7 +23,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url('https://i.ibb.co/tJkQ9f0/water-drop.png');
+      background-image: url('https://www.transparenttextures.com/patterns/watercolor.png');
       background-size: 100px;
       background-repeat: repeat;
       opacity: 0.03;
@@ -62,6 +62,25 @@
       padding: 20px;
       text-align: center;
       animation: slideInDown 1s;
+    }
+    nav {
+      background-color: #0288d1;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .section {
+      padding: 30px;
+      display: none;
     }
     .intro {
       background: #01579b;
@@ -108,16 +127,34 @@
     </audio>
   </div>
 
+  <!-- Intro Section -->
   <div class="intro" style="display:none;" id="mainIntro">
     <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_YXD37q.json" background="transparent" speed="1" loop autoplay></lottie-player>
     <span>Start with </span><span>HydroSense: </span><span>Let's sense every drop!</span>
   </div>
+
+  <!-- Navigation -->
+  <nav style="display:none" id="navBar">
+    <a href="#" onclick="showSection('home')">Home</a>
+    <a href="#" onclick="showSection('dashboard')">Dashboard</a>
+    <a href="#" onclick="showSection('about')">About</a>
+  </nav>
+
+  <!-- Sections -->
+  <div id="home" class="section">Welcome to HydroSense! Monitor and manage your water usage smartly.</div>
+  <div id="dashboard" class="section">
+    <h2>Water Usage Dashboard</h2>
+    <canvas id="waterChart" width="400" height="200"></canvas>
+  </div>
+  <div id="about" class="section">HydroSense is your smart companion in saving water drop by drop.</div>
 
   <script>
     let progress = 0;
     const bar = document.getElementById("progressBar");
     const splash = document.getElementById("splash");
     const intro = document.getElementById("mainIntro");
+    const nav = document.getElementById("navBar");
+    const sections = document.querySelectorAll('.section');
 
     const simulateLoading = setInterval(() => {
       progress += 5;
@@ -126,20 +163,42 @@
         clearInterval(simulateLoading);
         splash.style.display = 'none';
         intro.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+          intro.style.display = 'none';
+          nav.style.display = 'flex';
+          showSection('home');
+        }, 4000);
       }
     }, 150);
- // PWA service worker registration
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('service-worker.js').then(function(reg) {
-      console.log('Service Worker registered with scope:', reg.scope);
-    }, function(err) {
-      console.log('Service Worker registration failed:', err);
-    });
-  });
-}
 
+    function showSection(id) {
+      sections.forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+
+    // Initialize Chart.js after splash and intro
+    setTimeout(() => {
+      const ctx = document.getElementById('waterChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Kitchen', 'Bathroom', 'Garden', 'Laundry'],
+          datasets: [{
+            label: 'Water Usage (Litres)',
+            data: [120, 200, 150, 80],
+            backgroundColor: '#0288d1'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }, 6000);
   </script>
 </body>
 </html>
