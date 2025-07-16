@@ -129,6 +129,17 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }, 150);
+ // PWA service worker registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('service-worker.js').then(function(reg) {
+      console.log('Service Worker registered with scope:', reg.scope);
+    }, function(err) {
+      console.log('Service Worker registration failed:', err);
+    });
+  });
+}
+
   </script>
 </body>
 </html>
