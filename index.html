@@ -81,6 +81,24 @@
       align-items: center;
       animation: fadeInDrop 3s ease-out forwards;
     }
+    .tips-box {
+      margin-top: 40px;
+      padding: 20px;
+      background: #e1f5fe;
+      border-left: 6px solid #0288d1;
+      border-radius: 8px;
+    }
+    .tips-box h3 {
+      margin-top: 0;
+      color: #0288d1;
+    }
+    .tips-box ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .tips-box li {
+      margin-bottom: 10px;
+    }
     @keyframes fadeInDrop {
       0% { opacity: 0; transform: translateY(-50px); }
       100% { opacity: 1; transform: translateY(0); }
@@ -89,7 +107,7 @@
 </head>
 <body>
   <div class="splash-screen" id="splash">
-    <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_hydwfxva.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
+    <lottie-player src="https://assets1.lottiefiles.com/private_files/lf30_m6j5igxb.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
     <p>Loading HydroSense...</p>
     <div class="progress-container">
       <div class="progress-bar" id="progressBar"></div>
@@ -107,7 +125,7 @@
 
   <div id="home" class="section">
     <div class="droplet-animation">
-      <lottie-player src="https://assets7.lottiefiles.com/packages/lf20_Cc8Bpg.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
+      <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_kvwyst7p.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
       <h1 style="font-size: 2rem; color: #0288d1;">HydroSense – Let's Sense Every Drop</h1>
     </div>
     <p>Monitor and manage your water usage smartly.</p>
@@ -121,138 +139,31 @@
       <p id="motorStatus">Motor is OFF</p>
       <div id="alertMsg"></div>
     </div>
-  </div>
 
-  <div id="tank" class="section">
-    <div class="tank">
-      <h3>Tank Level History</h3>
-      <canvas id="tankChart" width="400" height="200"></canvas>
+    <div class="tips-box">
+      <h3>💧 Water Conservation Tips</h3>
+      <ul id="tipList">
+        <li>Turn off the tap while brushing your teeth.</li>
+      </ul>
+      <button class="btn" onclick="showRandomTip()">Show Another Tip</button>
     </div>
-  </div>
-
-  <div id="dashboard" class="section">
-    <h2>Usage Dashboard</h2>
-    <canvas id="usageChart" width="400" height="200"></canvas>
-  </div>
-
-  <div id="feedback" class="section">
-    <h2>Send Feedback or Suggestions</h2>
-    <div class="feedback">
-      <textarea placeholder="Enter your thoughts here..."></textarea>
-      <button class="btn">Submit</button>
-    </div>
-  </div>
-
-  <div id="live" class="section">
-    <h2>Live Sensor Data</h2>
-    <p><strong>Flow Rate:</strong> <span id="liveFlow">Loading...</span> L/min</p>
-    <p><strong>Soil Moisture:</strong> <span id="liveSoil">Loading...</span>%</p>
-    <p><strong>Tank Distance:</strong> <span id="liveLevel">Loading...</span> cm</p>
-    <p style="font-size: 0.9em; color: gray;">Note: This is dummy simulated data. Connect Firebase or ESP32 for real data.</p>
   </div>
 
   <script>
-    let progress = 0;
-    const bar = document.getElementById("progressBar");
-    const splash = document.getElementById("splash");
-    const nav = document.getElementById("mainNav");
-    const sections = document.querySelectorAll('.section');
+    const tips = [
+      "Turn off the tap while brushing your teeth.",
+      "Fix leaks promptly to avoid water waste.",
+      "Use a bucket instead of a hose to wash your car.",
+      "Collect rainwater for gardening purposes.",
+      "Use water-efficient appliances.",
+      "Don't overwater your plants — water early morning or evening.",
+      "Run full loads in your washing machine or dishwasher."
+    ];
 
-    const simulateLoading = setInterval(() => {
-      progress += 5;
-      bar.style.width = progress + "%";
-      if (progress >= 100) {
-        clearInterval(simulateLoading);
-        splash.style.display = 'none';
-        nav.style.display = 'flex';
-        showSection('home');
-      }
-    }, 100);
-
-    function showSection(id) {
-      sections.forEach(sec => sec.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-    }
-
-    let motorOn = false;
-    function toggleMotor() {
-      motorOn = !motorOn;
-      document.getElementById('motorStatus').textContent = `Motor is ${motorOn ? 'ON' : 'OFF'}`;
-    }
-
-    setInterval(() => {
-      const level = Math.floor(30 + Math.random() * 60);
-      document.getElementById('tankFill').style.width = `${level}%`;
-      document.getElementById('tankPercentage').textContent = `${level}%`;
-
-      const alertMsg = document.getElementById('alertMsg');
-      if (level < 40) {
-        alertMsg.innerHTML = '<div class="alert low">Warning: Tank level low!</div>';
-      } else if (level > 85) {
-        alertMsg.innerHTML = '<div class="alert high">Alert: Tank is nearly full!</div>';
-      } else {
-        alertMsg.innerHTML = '';
-      }
-    }, 4000);
-
-    setInterval(() => {
-      document.getElementById('liveFlow').textContent = (Math.random() * 10).toFixed(2);
-      document.getElementById('liveSoil').textContent = (40 + Math.random() * 30).toFixed(1);
-      document.getElementById('liveLevel').textContent = (5 + Math.random() * 20).toFixed(1);
-    }, 3000);
-
-    const tankCtx = document.getElementById('tankChart').getContext('2d');
-    const tankData = {
-      labels: Array.from({ length: 10 }, (_, i) => `T-${10 - i}s`),
-      datasets: [{
-        label: 'Tank Fill Level (%)',
-        data: Array.from({ length: 10 }, () => Math.floor(40 + Math.random() * 50)),
-        backgroundColor: '#4fc3f7'
-      }]
-    };
-    const tankChart = new Chart(tankCtx, {
-      type: 'line',
-      data: tankData,
-      options: {
-        responsive: true,
-        scales: {
-          y: { beginAtZero: true, max: 100 }
-        }
-      }
-    });
-
-    setInterval(() => {
-      const nextVal = Math.floor(40 + Math.random() * 50);
-      tankData.labels.shift();
-      tankData.labels.push('Now');
-      tankData.datasets[0].data.shift();
-      tankData.datasets[0].data.push(nextVal);
-      tankChart.update();
-    }, 4000);
-
-    const usageCtx = document.getElementById('usageChart').getContext('2d');
-    const usageChart = new Chart(usageCtx, {
-      type: 'bar',
-      data: {
-        labels: ['Kitchen', 'Bathroom', 'Garden', 'Washing', 'Other'],
-        datasets: [{
-          label: 'Water Usage (Litres)',
-          data: [120, 300, 90, 150, 60],
-          backgroundColor: ['#4dd0e1', '#26c6da', '#00bcd4', '#00acc1', '#0097a7']
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
+    function showRandomTip() {
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      const tipList = document.getElementById('tipList');
+      tipList.innerHTML = `<li>${randomTip}</li>`;
     }
   </script>
 </body>
