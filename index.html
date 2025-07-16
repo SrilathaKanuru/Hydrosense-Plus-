@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0288d1"/>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+  <title>HydroSense Pro</title>
+</head>
+<body>
+
+  <header>
+    <h1>💧 HydroSense Pro</h1>
+    <p>Smart Water Monitoring</p>
+  </header>
+
+  <nav>
+    <button onclick="navigate('home')">🏠 Home</button>
+    <button onclick="navigate('graph')">📊 Graph</button>
+    <button onclick="navigate('settings')">⚙️ Settings</button>
+    <button onclick="navigate('about')">ℹ️ About</button>
+    <button onclick="toggleDarkMode()">🌓 Mode</button>
+  </nav>
+
+  <main>
+    <!-- Home -->
+    <section id="home" class="screen active">
+      <div class="card"><h2>Total Usage</h2><p><strong id="usage">128 Liters</strong></p></div>
+      <div class="card"><h2>Kitchen</h2><p>30 Liters</p></div>
+      <div class="card"><h2>Bathroom</h2><p>55 Liters</p></div>
+      <div class="card"><h2>Leak Detection</h2><p id="leak">No Leak</p></div>
+      <div class="card"><h2>Irrigation</h2><p>Status: <span id="irrigation">OFF</span></p><button onclick="toggleIrrigation()">Toggle</button></div>
+      <div class="card"><h2>Tank Level</h2><p id="tankLevel">Full</p></div>
+      <div class="card"><h2>💡 Water Tip</h2><p id="tipText">Use buckets instead of hoses.</p></div>
+    </section>
+
+    <!-- Graph -->
+    <section id="graph" class="screen">
+      <div class="card">
+        <h2>Weekly Usage</h2>
+        <canvas id="usageChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="settings" class="screen">
+      <div class="card">
+        <h2>Set Usage Limit</h2>
+        <input type="range" min="50" max="200" value="120" id="limitSlider" oninput="updateLimit(this.value)">
+        <p>Limit: <span id="limitValue">120</span> Liters</p>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="screen">
+      <div class="card">
+        <h2>About</h2>
+        <p>HydroSense Pro is a prototype water monitoring PWA with dashboard, chart, alerts, and more.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 HydroSense Pro</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Navigation
+    function navigate(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // Dark mode
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    // Irrigation toggle
+    function toggleIrrigation() {
+      const ele = document.getElementById("irrigation");
+      ele.innerText = (ele.innerText === "OFF") ? "ON" : "OFF";
+    }
+
+    // Slider limit check
+    function updateLimit(val) {
+      document.getElementById("limitValue").innerText = val;
+      let usage = 128;
+      if (usage > val) {
+        alert("🚨 Usage exceeded!");
+      }
+    }
+
+    // Chart
+    new Chart(document.getElementById("usageChart"), {
+      type: "line",
+      data: {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        datasets: [{
+          label: "Water Usage (L)",
+          data: [100, 110, 90, 130, 105, 120, 128],
+          backgroundColor: 'rgba(2,136,209,0.2)',
+          borderColor: "#0288d1",
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: { responsive: true }
+    });
+
+    // Tip of the day
+    const tips = [
+      "Turn off the tap while brushing.",
+      "Fix leaks immediately.",
+      "Use low-flow shower heads.",
+      "Collect rainwater for plants.",
+      "Use a bucket instead of a hose."
+    ];
+    document.getElementById("tipText").innerText = tips[Math.floor(Math.random() * tips.length)];
+
+    // Tank level
+    const tank = document.getElementById('tankLevel');
+    const levels = ['Low', 'Medium', 'Full'];
+    tank.innerText = levels[Math.floor(Math.random() * levels.length)];
+  </script>
+
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log("✅ SW Registered"))
+        .catch(err => console.error("❌ SW Error:", err));
+    }
+  </script>
+</body>
+</html>
