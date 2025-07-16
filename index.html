@@ -7,14 +7,54 @@
   <title>HydroSense Pro</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <style>
-    /* Embedded style for demo purposes */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       background: #e0f7fa;
       color: #004d40;
       overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://i.ibb.co/tJkQ9f0/water-drop.png');
+      background-size: 100px;
+      background-repeat: repeat;
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .splash-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #01579b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+      color: white;
+      font-size: 1.5rem;
+    }
+    .progress-container {
+      width: 80%;
+      height: 10px;
+      background: rgba(255,255,255,0.2);
+      margin-top: 20px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #ffffff;
+      transition: width 0.2s ease-in-out;
     }
     header {
       background: linear-gradient(to right, #0288d1, #26c6da);
@@ -23,230 +63,72 @@
       text-align: center;
       animation: slideInDown 1s;
     }
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      background: #b3e5fc;
-      padding: 10px;
-    }
-    nav button {
-      background: #0288d1;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      margin: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    nav button:hover {
+    .intro {
       background: #01579b;
-    }
-    .screen {
-      display: none;
-      padding: 15px;
-    }
-    .screen.active {
-      display: block;
-    }
-    .card {
-      background: white;
-      margin: 15px 0;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-      animation: fadeIn 1s;
-    }
-    .card:hover {
-      transform: scale(1.02);
-    }
-    .card.expanded {
-      background: #f0f8ff;
-    }
-    footer {
+      color: white;
       text-align: center;
-      padding: 10px;
-      font-size: 13px;
-      color: #555;
-      background: #eee;
+      padding: 40px 20px;
+      font-size: 1.5rem;
+      animation: fadeIn 2s ease-in-out;
+      position: relative;
+      z-index: 1;
     }
-    .pulse {
-      animation: pulse 1s infinite;
+    .intro span {
+      display: inline-block;
+      animation: dropFade 2s ease forwards;
+      opacity: 0;
     }
-    @keyframes pulse {
-      0% { background-color: #ffebee; }
-      50% { background-color: #ffcdd2; }
-      100% { background-color: #ffebee; }
+    .intro span:nth-child(1) { animation-delay: 0s; }
+    .intro span:nth-child(2) { animation-delay: 0.5s; }
+    .intro span:nth-child(3) { animation-delay: 1s; }
+    .intro lottie-player {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 100px;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes slideInDown {
-      from { transform: translateY(-100%); }
-      to { transform: translateY(0); }
-    }
-    body.drops::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: url('https://i.ibb.co/tJkQ9f0/water-drop.png') repeat;
-      opacity: 0.02;
-      z-index: -1;
+    @keyframes dropFade {
+      0% { transform: translateY(-20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
 <body class="drops">
+  <!-- Splash screen -->
+  <div class="splash-screen" id="splash">
+    <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_hydwfxva.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
+    <p>Loading HydroSense...</p>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <audio id="splashSound" autoplay>
+      <source src="https://actions.google.com/sounds/v1/water/bubble_water.ogg" type="audio/ogg">
+    </audio>
+  </div>
 
-  <header>
-    <h1>💧 HydroSense Pro</h1>
-    <p>Smart Water Monitoring</p>
-  </header>
-
-  <nav>
-    <button onclick="navigate('home')">🏠 Home</button>
-    <button onclick="navigate('graph')">📊 Graph</button>
-    <button onclick="navigate('about')">ℹ️ About</button>
-    <button onclick="toggleDarkMode()">🌑 Mode</button>
-  </nav>
-
-  <main>
-    <!-- Home -->
-    <section id="home" class="screen active">
-      <div class="card"><h2>Total Usage</h2><p><strong id="usage">128 Liters</strong></p></div>
-      <div class="card"><h2>Tank Level</h2><p id="tankLevel">Full</p></div>
-      <div class="card"><h2>Temperature</h2><p id="tempSensor"></p></div>
-      <div class="card"><h2>Battery Level</h2><p id="batteryLevel"></p></div>
-      <div class="card"><h2>💡 Water Tip</h2><p id="tipText"></p></div>
-      <div class="card"><h2>Progress</h2><div style="background:#ddd; border-radius:10px;"><div id="progressBar" style="width:60%; background:#0288d1; color:white; padding:5px; border-radius:10px;">60%</div></div></div>
-    </section>
-
-    <!-- Graph -->
-    <section id="graph" class="screen">
-      <div class="card">
-        <h2>Water Usage</h2>
-        <select onchange="toggleGraphData(this.value)">
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-        </select>
-        <canvas id="graphCanvas"></canvas>
-      </div>
-    </section>
-
-    <!-- About -->
-    <section id="about" class="screen">
-      <div class="card">
-        <h2>About HydroSense Pro</h2>
-        <p>This app demonstrates a smart water monitoring dashboard with charts, tips, animations, and dark mode.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>© 2025 HydroSense Pro</p>
-  </footer>
+  <div class="intro" style="display:none;" id="mainIntro">
+    <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_YXD37q.json" background="transparent" speed="1" loop autoplay></lottie-player>
+    <span>Start with </span><span>HydroSense: </span><span>Let's sense every drop!</span>
+  </div>
 
   <script>
-    function navigate(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
+    let progress = 0;
+    const bar = document.getElementById("progressBar");
+    const splash = document.getElementById("splash");
+    const intro = document.getElementById("mainIntro");
 
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark');
-    }
-
-    // Chart.js setup
-    let usageChart;
-    let chartLabels = {
-      daily: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      weekly: ['Week 1', 'Week 2', 'Week 3', 'Week 4']
-    };
-    let chartData = {
-      daily: [45, 50, 60, 55, 70, 65, 68],
-      weekly: [320, 280, 310, 345]
-    };
-    function renderChart(type = 'daily') {
-      if (usageChart) usageChart.destroy();
-      usageChart = new Chart(document.getElementById("graphCanvas"), {
-        type: 'bar',
-        data: {
-          labels: chartLabels[type],
-          datasets: [{
-            label: "Liters Used",
-            data: chartData[type],
-            backgroundColor: '#0288d1',
-            borderColor: '#01579b',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          animation: { duration: 1200 },
-          scales: { y: { beginAtZero: true } }
-        }
-      });
-    }
-    renderChart();
-    function toggleGraphData(type) { renderChart(type); }
-
-    // Simulated sensor values
-    const temp = 24 + Math.floor(Math.random() * 6);
-    document.getElementById("tempSensor").innerText = temp + " °C";
-    document.getElementById("batteryLevel").innerText = (60 + Math.floor(Math.random() * 30)) + "%";
-
-    // Water usage tip rotation
-    const tips = [
-      "Turn off tap while brushing.",
-      "Fix leaks immediately.",
-      "Use buckets instead of hoses.",
-      "Water plants early in the morning.",
-      "Check tanks weekly."
-    ];
-    function rotateTip() {
-      const tipEl = document.getElementById("tipText");
-      let index = 0;
-      const lastTip = localStorage.getItem("lastTip");
-      if (lastTip) tipEl.innerText = lastTip;
-      setInterval(() => {
-        tipEl.innerText = tips[index % tips.length];
-        localStorage.setItem("lastTip", tips[index % tips.length]);
-        index++;
-      }, 5000);
-    }
-    rotateTip();
-
-    // Simulate tank level
-    const tank = document.getElementById('tankLevel');
-    const levels = ['Low', 'Medium', 'Full'];
-    tank.innerText = levels[Math.floor(Math.random() * levels.length)];
-
-    // Usage alert
-    const usage = 128;
-    const limit = 120;
-    const usageEle = document.getElementById("usage");
-    if (usage > limit) {
-      usageEle.classList.add("pulse");
-    }
-
-    // Progress bar
-    const usagePercent = Math.min(100, Math.floor((usage / 200) * 100));
-    document.getElementById("progressBar").style.width = usagePercent + "%";
-    document.getElementById("progressBar").innerText = usagePercent + "%";
-
-    // Expandable cards
-    document.querySelectorAll(".card").forEach(card => {
-      card.addEventListener("click", () => {
-        card.classList.toggle("expanded");
-      });
-    });
-
-    // Auto dark mode by time
-    const hour = new Date().getHours();
-    if (hour >= 19 || hour <= 6) document.body.classList.add("dark");
+    const simulateLoading = setInterval(() => {
+      progress += 5;
+      bar.style.width = progress + "%";
+      if (progress >= 100) {
+        clearInterval(simulateLoading);
+        splash.style.display = 'none';
+        intro.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 150);
   </script>
 </body>
 </html>
