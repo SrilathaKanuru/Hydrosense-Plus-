@@ -231,6 +231,28 @@
       tankChart.update();
     }, 4000);
 
+    // Usage chart for dashboard
+    const usageCtx = document.getElementById('usageChart').getContext('2d');
+    const usageChart = new Chart(usageCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Kitchen', 'Bathroom', 'Garden', 'Washing', 'Other'],
+        datasets: [{
+          label: 'Water Usage (Litres)',
+          data: [120, 300, 90, 150, 60],
+          backgroundColor: ['#4dd0e1', '#26c6da', '#00bcd4', '#00acc1', '#0097a7']
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
