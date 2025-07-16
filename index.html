@@ -75,11 +75,17 @@
     .feedback button {
       margin-top: 10px;
     }
-  @keyframes fadeInDrop {
-  0% { transform: translateY(0); opacity: 0.8; }
-  100% { transform: translateY(-10px); opacity: 1; }
-}
-$1
+    .droplet-animation {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeInDrop 3s ease-out forwards;
+    }
+    @keyframes fadeInDrop {
+      0% { opacity: 0; transform: translateY(-50px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
   <div class="splash-screen" id="splash">
@@ -90,23 +96,21 @@ $1
     </div>
   </div>
 
-  $1
-    <a href="#" onclick="showSection('tank')">Tank Level</a>
+  <nav id="mainNav" style="display: none;">
     <a href="#" onclick="showSection('home')">Home</a>
     <a href="#" onclick="showSection('dashboard')">Dashboard</a>
+    <a href="#" onclick="showSection('tank')">Tank Level</a>
     <a href="#" onclick="showSection('feedback')">Feedback</a>
     <a href="#" onclick="showSection('live')">Live Data</a>
     <button class="btn-toggle-mode" onclick="toggleDarkMode()">🌓</button>
   </nav>
 
-  $1
-    <div style="text-align:center; margin-bottom: 20px;">
-      <h1 style="font-size: 2rem; color: #0288d1; animation: fadeInDrop 2s ease-out infinite alternate;">
-        HydroSense – Let's Sense Every Drop
-      </h1>
-    </div><h2>Welcome to HydroSense!</h2>
+  <div id="home" class="section">
+    <div class="droplet-animation">
+      <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_wFGV4i.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
+      <h1 style="font-size: 2rem; color: #0288d1;">HydroSense – Let's Sense Every Drop</h1>
+    </div>
     <p>Monitor and manage your water usage smartly.</p>
-    <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kq5rGs.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></lottie-player>
     <div class="tank">
       <h3>Water Tank Level</h3>
       <div class="tank-level" style="height: 30px; width: 100%; background: #81d4fa; border-radius: 5px;">
@@ -119,12 +123,14 @@ $1
     </div>
   </div>
 
-  $1
-    <div class="tank" style="margin-top: 30px;">
+  <div id="tank" class="section">
+    <div class="tank">
       <h3>Tank Level History</h3>
       <canvas id="tankChart" width="400" height="200"></canvas>
     </div>
-  $1
+  </div>
+
+  <div id="dashboard" class="section">
     <h2>Usage Dashboard</h2>
     <canvas id="usageChart" width="400" height="200"></canvas>
   </div>
@@ -174,20 +180,18 @@ $1
       document.getElementById('motorStatus').textContent = `Motor is ${motorOn ? 'ON' : 'OFF'}`;
     }
 
-    $1
-
     setInterval(() => {
-      const level2 = Math.floor(30 + Math.random() * 60);
-      document.getElementById('tankFill2').style.width = `${level2}%`;
-      document.getElementById('tankPercentage2').textContent = `${level2}%`;
+      const level = Math.floor(30 + Math.random() * 60);
+      document.getElementById('tankFill').style.width = `${level}%`;
+      document.getElementById('tankPercentage').textContent = `${level}%`;
 
-      const alertMsg2 = document.getElementById('alertMsg2');
-      if (level2 < 40) {
-        alertMsg2.innerHTML = '<div class="alert low">Warning: Tank level low!</div>';
-      } else if (level2 > 85) {
-        alertMsg2.innerHTML = '<div class="alert high">Alert: Tank is nearly full!</div>';
+      const alertMsg = document.getElementById('alertMsg');
+      if (level < 40) {
+        alertMsg.innerHTML = '<div class="alert low">Warning: Tank level low!</div>';
+      } else if (level > 85) {
+        alertMsg.innerHTML = '<div class="alert high">Alert: Tank is nearly full!</div>';
       } else {
-        alertMsg2.innerHTML = '';
+        alertMsg.innerHTML = '';
       }
     }, 4000);
 
@@ -196,8 +200,6 @@ $1
       document.getElementById('liveSoil').textContent = (40 + Math.random() * 30).toFixed(1);
       document.getElementById('liveLevel').textContent = (5 + Math.random() * 20).toFixed(1);
     }, 3000);
-
-    $1
 
     // Tank level history chart
     const tankCtx = document.getElementById('tankChart').getContext('2d');
@@ -228,7 +230,6 @@ $1
       tankData.datasets[0].data.push(nextVal);
       tankChart.update();
     }, 4000);
-    }, 1500);
 
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
