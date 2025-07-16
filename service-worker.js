@@ -1,20 +1,20 @@
-const cacheName = 'hydrosense-v1';
-const filesToCache = [
-  'index.html',
-  'style.css',
-  'manifest.json',
-  'icon-192.png',
-  'icon-512.png'
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(cacheName).then(cache => cache.addAll(filesToCache))
+self.addEventListener('install', function(e) {
+  e.waitUntil(
+    caches.open('hydrosense-v1').then(function(cache) {
+      return cache.addAll([
+        './index.html',
+        './style.css',
+        './manifest.json',
+        './icon.png'
+      ]);
+    })
   );
 });
 
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then(res => res || fetch(event.request))
+self.addEventListener('fetch', function(e) {
+  e.respondWith(
+    caches.match(e.request).then(function(response) {
+      return response || fetch(e.request);
+    })
   );
 });
