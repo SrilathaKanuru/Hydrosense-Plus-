@@ -57,27 +57,6 @@
       padding: 20px;
       margin-top: 20px;
     }
-    .alert {
-      padding: 10px;
-      margin-top: 15px;
-      border-radius: 5px;
-      color: white;
-      font-weight: bold;
-    }
-    .low { background: #d32f2f; }
-    .high { background: #388e3c; }
-    .feedback {
-      margin-top: 30px;
-    }
-    .feedback textarea {
-      width: 100%;
-      height: 100px;
-      padding: 10px;
-      margin-top: 10px;
-    }
-    .feedback button {
-      margin-top: 10px;
-    }
     .droplet-animation {
       display: flex;
       flex-direction: column;
@@ -144,9 +123,7 @@
       <p id="tankPercentage">50%</p>
       <button class="btn" onclick="toggleMotor()">Toggle Motor</button>
       <p id="motorStatus">Motor is OFF</p>
-      <div id="alertMsg"></div>
     </div>
-
     <div class="tips-box">
       <h3>💧 Water Conservation Tips</h3>
       <ul id="tipList">
@@ -154,6 +131,11 @@
       </ul>
       <button class="btn" onclick="showRandomTip()">Show Another Tip</button>
     </div>
+  </div>
+
+  <div id="dashboard" class="section">
+    <h2>Usage Dashboard</h2>
+    <canvas id="usageChart" width="400" height="200"></canvas>
   </div>
 
   <script>
@@ -203,6 +185,27 @@
           splash.style.display = "none";
           document.getElementById("mainNav").style.display = "flex";
           showSection('home');
+
+          // Initialize chart
+          const usageCtx = document.getElementById('usageChart').getContext('2d');
+          new Chart(usageCtx, {
+            type: 'bar',
+            data: {
+              labels: ['Kitchen', 'Bathroom', 'Garden', 'Washing', 'Other'],
+              datasets: [{
+                label: 'Water Usage (Litres)',
+                data: [120, 300, 90, 150, 60],
+                backgroundColor: ['#4dd0e1', '#26c6da', '#00bcd4', '#00acc1', '#0097a7']
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: { beginAtZero: true }
+              }
+            }
+          });
+
         } else {
           width += 1;
           progressBar.style.width = width + "%";
